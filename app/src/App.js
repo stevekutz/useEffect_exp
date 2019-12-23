@@ -1,7 +1,7 @@
 import React , {useEffect} from 'react';
 import {useState} from 'reinspect';
 import axios from 'axios';
-import {List, Image, Icon} from 'semantic-ui-react';
+import {List, Image, Input} from 'semantic-ui-react';
 import smiley from './img/happysmiley.jpg';
 import colorBurst from './img/ColourSurge1.jpg';
 
@@ -10,16 +10,27 @@ const App = () => {
 
     // the API requires data.hits
 
-    const [data, setFetchedData] = useState({ hits: [] });
+    const [data, setFetchedData] = useState({ hits: [] }, 'Fetched Data');
+    const [search, setSearch] = useState('redux', 'Search Term')
+
     useEffect(() => {
       const fetched = async () => {
         const fetchResult = await axios(
-          'https://hn.algolia.com/api/v1/search?query=redux',
+          `https://hn.algolia.com/api/v1/search?query=${search}`,
         );
         setFetchedData(fetchResult.data);
       };
       fetched();
-    }, []);
+    }, [search]);
+
+
+    // NOT needed it we use anonymous onChange handler
+    const handleInput = (e, data) => {
+        const {value} = e.target;
+        setSearch(value);
+    }
+
+
     return (
         <div style = {{
             backgroundImage: `url(${colorBurst})`,
@@ -33,6 +44,14 @@ const App = () => {
             right: '0',
             }}
         >
+            <Input 
+               type = 'text'
+               // onChange = {(e)  => setSearch(e.target.value)}
+               onChange = {handleInput}
+               value = {search}
+            
+            />
+
 
             <List>
                 
