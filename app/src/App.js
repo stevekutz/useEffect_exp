@@ -1,7 +1,7 @@
 import React , {useEffect} from 'react';
 import {useState} from 'reinspect';
 import axios from 'axios';
-import {List, Image, Input} from 'semantic-ui-react';
+import {Button, List, Image, Input} from 'semantic-ui-react';
 import smiley from './img/happysmiley.jpg';
 import colorBurst from './img/ColourSurge1.jpg';
 
@@ -11,17 +11,34 @@ const App = () => {
     // the API requires data.hits
 
     const [data, setFetchedData] = useState({ hits: [] }, 'Fetched Data');
-    const [search, setSearch] = useState('redux', 'Search Term')
+    const [searchInput, setSearch] = useState('redux', 'Search');
+    // This is one way to manually set search value to search for instead of allowing
+    // evey keystroke change it
+    //const [searchTerm, setSearchTerm] = useState('redux', 'Search Term')
+
+    // A better method avoids using same value for default state
+    const [url, setURL] = useState( `https://hn.algolia.com/api/v1/search?query=redux`, "URL selected"
+    );
 
     useEffect(() => {
       const fetched = async () => {
-        const fetchResult = await axios(
-          `https://hn.algolia.com/api/v1/search?query=${search}`,
-        );
+        // const 
+        // // const fetchResult = await axios(
+        // //   `https://hn.algolia.com/api/v1/search?query=${search}`,
+        // // `https://hn.algolia.com/api/v1/search?query=${searchTerm}`
+
+
+        // );
+        const fetchResult = await axios (url);
+
         setFetchedData(fetchResult.data);
       };
+
       fetched();
-    }, [search]);
+    }, [url]);
+    
+    // }, [searchTerm]);
+    //}, [search]);
 
 
     // NOT needed it we use anonymous onChange handler
@@ -46,12 +63,17 @@ const App = () => {
         >
             <Input 
                type = 'text'
-               // onChange = {(e)  => setSearch(e.target.value)}
-               onChange = {handleInput}
-               value = {search}
-            
+               onChange = {(e)  => setSearch(e.target.value)}
+               //onChange = {handleInput}
+               value = {searchInput}
             />
 
+            <Button
+                type = 'button'
+                // onClick = {() => setSearchTerm(searchInput)}
+                onClick = {() => setURL(`https://hn.algolia.com/api/v1/search?query=${searchInput}`)}
+
+            > Search </Button>
 
             <List>
                 
