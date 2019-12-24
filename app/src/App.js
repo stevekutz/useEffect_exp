@@ -1,7 +1,7 @@
 import React , {useEffect} from 'react';
 import {useState} from 'reinspect';
 import axios from 'axios';
-import {Button, List, Image, Input} from 'semantic-ui-react';
+import {Button, Dimmer, List, Image, Input, Loader, Progress} from 'semantic-ui-react';
 import smiley from './img/happysmiley.jpg';
 import colorBurst from './img/ColourSurge1.jpg';
 
@@ -19,26 +19,23 @@ const App = () => {
     // A better method avoids using same value for default state
     const [url, setURL] = useState( `https://hn.algolia.com/api/v1/search?query=redux`, "URL selected"
     );
+    const [isLoading, setIsLoading] = useState(false, 'Loading State');
+
+
 
     useEffect(() => {
-      const fetched = async () => {
-        // const 
-        // // const fetchResult = await axios(
-        // //   `https://hn.algolia.com/api/v1/search?query=${search}`,
-        // // `https://hn.algolia.com/api/v1/search?query=${searchTerm}`
 
+        const fetched = async () => {
+            setIsLoading(true);
 
-        // );
-        const fetchResult = await axios (url);
+            const fetchResult = await axios (url);
 
-        setFetchedData(fetchResult.data);
-      };
+            setFetchedData(fetchResult.data);
+            setIsLoading(false);
+        };
 
-      fetched();
+        fetched();
     }, [url]);
-    
-    // }, [searchTerm]);
-    //}, [search]);
 
 
     // NOT needed it we use anonymous onChange handler
@@ -75,16 +72,23 @@ const App = () => {
 
             > Search </Button>
 
-            <List>
-                
-                {data.hits.map(item => (
-                    <List.Item key={item.objectID}>
-                        <Image src = {smiley}   size = 'mini' verticalAlign = 'middle' rounded spaced = 'left'/>
-                        <a style = {{color: 'lightgrey', padding: '2px'}} href={item.uList}>{item.title}</a>
-                    </List.Item>
-                ))}
+            {isLoading 
+                ? 
+                   <Dimmer active >
+                        <Loader content = 'Loading'/>
+                   </Dimmer>
+                :
+                    <List>
+                        
+                        {data.hits.map(item => (
+                            <List.Item key={item.objectID}>
+                                <Image src = {smiley}   size = 'mini' verticalAlign = 'middle' rounded spaced = 'left'/>
+                                <a style = {{color: 'lightgrey', padding: '2px'}} href={item.uList}>{item.title}</a>
+                            </List.Item>
+                        ))}
 
-            </List>
+                    </List>
+            }
         </div>
     );
 
