@@ -1,7 +1,7 @@
 import React , {useEffect} from 'react';
 import {useState} from 'reinspect';
 import axios from 'axios';
-import {Button, Dimmer, List, Image, Input, Loader, Progress} from 'semantic-ui-react';
+import {Button, Dimmer, Form ,List, Image, Input, Loader, Progress, Segment} from 'semantic-ui-react';
 import smiley from './img/happysmiley.jpg';
 import colorBurst from './img/ColourSurge1.jpg';
 
@@ -20,17 +20,25 @@ const App = () => {
     const [url, setURL] = useState( `https://hn.algolia.com/api/v1/search?query=redux`, "URL selected"
     );
     const [isLoading, setIsLoading] = useState(false, 'Loading State');
-
+    const [isError, setIsError] = useState(false, 'Error Loading State');
+    const [errorMsg, setErrorMsg] = useState('', 'Error Message');
 
 
     useEffect(() => {
 
         const fetched = async () => {
             setIsLoading(true);
+            setIsError(false);
 
+            try {
             const fetchResult = await axios (url);
 
             setFetchedData(fetchResult.data);
+            } catch (error){
+                setIsError(true);
+                setErrorMsg(error.toString());       
+            }    
+
             setIsLoading(false);
         };
 
@@ -58,20 +66,44 @@ const App = () => {
             right: '0',
             }}
         >
-            <Input 
-               type = 'text'
-               onChange = {(e)  => setSearch(e.target.value)}
-               //onChange = {handleInput}
-               value = {searchInput}
-            />
+            <Segment.Group horizontal>
+                <Segment>
+                    <Input 
+                    type = 'text'
+                    onChange = {(e)  => setSearch(e.target.value)}
+                    //onChange = {handleInput}
+                    value = {searchInput}
+                    />
 
-            <Button
-                type = 'button'
-                // onClick = {() => setSearchTerm(searchInput)}
-                onClick = {() => setURL(`https://hn.algolia.com/api/v1/search?query=${searchInput}`)}
+                    <Button
+                        type = 'button'
+                        // onClick = {() => setSearchTerm(searchInput)}
+                        onClick = {() => setURL(`https://hn.algolia.com/api/v1/search?query=${searchInput}`)}
 
-            > Search </Button>
+                    > Search </Button>
+                </Segment>
+                <Segment>
+                    <Form
+                        onSubmit = {(e) => {setURL(`https://hn.algolia.com/api/v1/search?query=${searchInput}`)
+                        e.preventDefault()
+                    }}                        
+                    >
+                        <Input
+                            type = 'text'
+                            value = {searchInput}
+                            onChange = {(e)  => setSearch(e.target.value)}
+                        />
+                    </Form>
+                
+                
+                
+                </Segment>
+            
+            
+            
+            </Segment.Group>
 
+            {isError && <Progress  percent={100} color = 'yellow' value = {errorMsg}> {errorMsg} </Progress>}
             {isLoading 
                 ? 
                    <Dimmer active >
@@ -83,7 +115,7 @@ const App = () => {
                         {data.hits.map(item => (
                             <List.Item key={item.objectID}>
                                 <Image src = {smiley}   size = 'mini' verticalAlign = 'middle' rounded spaced = 'left'/>
-                                <a style = {{color: 'lightgrey', padding: '2px'}} href={item.uList}>{item.title}</a>
+                                <a style = {{color: 'lightgrey', padding: '2px'}} href={item.url}>{item.title}</a>
                             </List.Item>
                         ))}
 
