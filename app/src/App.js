@@ -12,6 +12,7 @@ const App = () => {
 
     const [data, setFetchedData] = useState({ hits: [] }, 'Fetched Data');
     const [searchInput, setSearch] = useState('redux', 'Search');
+    const [storyInput, setStory] = useState('news', 'Story Input' );
     // This is one way to manually set search value to search for instead of allowing
     // evey keystroke change it
     //const [searchTerm, setSearchTerm] = useState('redux', 'Search Term')
@@ -84,19 +85,28 @@ const App = () => {
                 </Segment>
                 <Segment>
                     <Form
-                        onSubmit = {(e) => {setURL(`https://hn.algolia.com/api/v1/search?query=${searchInput}`)
+                        onSubmit = {(e) => {setURL(`https://hn.algolia.com/api/v1/search_by_date?tags=${storyInput}`)
                         e.preventDefault()
                     }}                        
                     >
                         <Input
                             type = 'text'
-                            value = {searchInput}
-                            onChange = {(e)  => setSearch(e.target.value)}
+                            value = {storyInput}
+                            onChange = {(e)  => setStory(e.target.value)}
                         />
+                        <Button type = 'submit'> Search Story</Button>
                     </Form>
                 
                 
                 
+                </Segment>
+                <Segment>
+                    <Button
+                    type = 'button'
+                    // onClick = {() => setSearchTerm(searchInput)}
+                    onClick = {() => setURL(`http://hn.algolia.com/api/v1/search?tags=front_page`)}
+
+                    > Latest </Button>
                 </Segment>
             
             
